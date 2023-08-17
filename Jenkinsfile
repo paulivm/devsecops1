@@ -14,11 +14,16 @@ pipeline {
                 checkout scm
             }
         }
-    stage('tfsec') {
-      steps {
-        sh ' /usr/local/bin/docker run --rm -v "$(pwd):/src" aquasec/tfsec .'
-      }
-    }
+
+      stage('tfsec') {
+            steps {
+                script {
+                    bat 'docker pull aquasec/tfsec'
+                    bat 'docker run --rm -v "${WORKSPACE}:/src" aquasec/tfsec /src'
+                    }
+                }
+            }
+        
     stage('Approval for Terraform') {
             steps {
                 input(message: 'Approval required before Terraform', ok: 'Proceed', submitterParameter: 'APPROVER')
@@ -27,8 +32,9 @@ pipeline {
 
         stage('terraform') {
             steps {
-                sh '/opt/homebrew/bin/terraform apply -auto-approve -no-color'
-            }
+                
+                bat 'C:\\Documentos\terraform.exe apply -auto-approve -no-color'
+                }
         }
     }
     post {
